@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% load bag_tools %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="col">
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <hr>
+            <h2 class="logo-font mb-4"></h2>
+            <hr>
+        </div>
+    </div>
+    <form action="{% url 'checkout' %}" method="POST" id="payment-form">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-12 col-lg-6 order-lg-last mb-5"></div>
+            <div class="col-12 col-lg-6">
+                <p class="text-muted">Please fill out the form</p>
+                <form action="{% url 'checkout' %}" method="POST" id="payment-form">
+                    {% csrf_token %}
+                </form>
+                <fieldset class="px-3 mb-5">
+                    <legend class="px-3 mb-5"> Information</legend>
+                    {{order_form.full_name|as crispy_field}}
+                    {{order_form.email|as crispy_field}}
+
+                </fieldset>
+                <fieldset class="px-3 mb-5">
+                    <legend class="px-3 mb-5">Information</legend>
+                    {{order_form.phone_number|as crispy_field}}
+                    {{order_form.country|as crispy_field}}
+                    {{order_form.postcode|as crispy_field}}
+                    {{order_form.town_or_city|as crispy_field}}
+                    {{order_form.street_address1|as crispy_field}}
+                    {{order_form.street_address2|as crispy_field}}
+                    {{order_form.county|as crispy_field}}
+
+                </fieldset>
+                <fieldset class="px-3 mb-5">
+                    <legend>Card information</legend>
+                    {{order_form.Card information|as crispy_field}}
+                </fieldset>
+                <fieldset class="px-3 mb-5">
+                    <legend>Payment</legend>
+                    <div class="mb-5" id="card-elements"></div>
+                    <div class="mb-5" id="card-errors"></div>
+                </fieldset>
+
+                <div class="submit-button mt-5 mb-2">
+                    <a href="{% url 'view_bag' %}" id="submit-button" class="btn btn-outline-black">
+                        <span>Adjust Bag</span>
+                        <span class="icon">
+                            <i></i>
+                        </span>
+                    </a>
+                    <button>
+                        <span class="font-weight-bold">Place Order</span>
+                    </button>
+                </div>
+    </form>
+
+</div>
+</div>
+</div>
+{% for item in bag_items %}
+<div>
+    <div>
+        <a href="{ url 'product_detail' item.product.id }">
+            {% if item.product.image %}
+            <img class="w-100" src="{{ item.product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+            <img class="w-100" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+            {% endif %}
+        </a>
+    </div>
+    <div class="col-3 text-right">
+
+
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+{{ stripe_public_key|json_script:"id_stripe_public_key" }}
+{{ client_secret|json_script:"id_client_secret" }}
+<script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block page_header %}
+
+<div class="container header-container">
+    <div class="col">
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="favorites-section">
+    <h2 class="favourites-header">Favorites</h2>
+    <ul id="favorites-list"></ul>
+</div>
+<!-- Creates a paragraph for checked favourite product/checked items -->
+<div class="row">
+    {% for products in checked_items %}
+    <p class="checked_items">{{ product.name }}</p>
+    <!-- create a for loop for iterating through the checked/favourite products -->
+
+    {% endfor %}
+</div>
+
+
+<div class="row">
+    <div class="product-container col-10 offset-1">
+        <div class="row mt-1 mb-2"></div>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0">
+                    {% if product.image %}
+                    <a href="{% url 'product_detail' product.id %}">
+                        <img class="card-image-top img-fluid" src="{{ product.image.url }}" alt="{{product.name}}">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'product_detail' product.id %}">
+                        <img class="card-image-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{product.name}}">
+                    </a>
+                    {% endif %}
+                    <div class="card-body pb-0">
+                        <p class="mb-0">{{product.name}}</p>
+                    </div>
+
+
+
+                    <!-- toggle function to be transfered into favourites -->
+
+                    <div type="checkbox">
+                        <td><input type="checkbox" name="checkbox" id="my_form"
+                                class=" check-mb-5 fas fa-heart ml-5 mr-1" placeholder="Favourite here!">
+                            <span class="icon"></span>
+                        </td>
+                    </div>
+
+                    <button id="add-to-fav-btn">Favourite this Product!</button>
+                    <div id="fav-items"></div>
+                    <!-- displays product rating and price -->
+
+                    <div class="card-footer bg-white pt-0 border-0 text-left">
+                        <div class="row">
+                            <div class="col">
+                                <p Class="lead mb-0 text-left font-weight-bold">${{product.price}}</p>
+                                {% if product.rating %}
+                                <small class="text-muted"><i class="fas fa-star mr-1"></i>{{product.rating}}</small>
+
+                            </div>
+                            {% else %}
+                            <small class="text-muted">No Rating</small>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if forloop.counter|divisibleby:1 %}
+        <div class="col-12 d-sm-none mb-5">
+            <hr>
+        </div>
+        {% endif %}
+
+        {% if forloop.counter|divisibleby:2 %}
+        <div class="col-12 d-none d-sm-block d-md-block d-lg-none mb-5">
+            <hr>
+        </div>
+        {% endif %}
+
+        {% if forloop.counter|divisibleby:3 %}
+        <div class="col-12 d-none d-lg-block d-xl-none mb-5">
+            <hr>
+        </div>
+        {% endif %}
+
+        {% if forloop.counter|divisibleby:4 %}
+        <div class="col-12 d-none d-xl-block mb-5">
+            <hr>
+        </div>
+        {% endif %}
+
+        {% endfor %}
+    </div>
+</div>
+
+<!-- JS for adding favourites to correct the favourites page -->
+<script type="text/javascript">
+    // list for favourite products to be injected to
+    let FavouriteProducts = [];
+
+    console.log("checking");
+
+
+    function saveBookmark(title, url) {
+        $.ajax({
+            url: '/save-bookmark/',
+            type: 'POST',
+            data: {
+                'title': title,
+                'url': url,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // Handle success
+            },
+            error: function () {
+                // Handle error
+            }
+        });
+    }
+    console.log("bookmark check");
+
+    function senditem(product) {
+        // Add the product to the favouriteProducts array
+        FavouriteProducts.push(product);
+        console.log(`Product ${product} has been added to favourites!`);
+    }
+    // Print the favourite products array to the console
+    console.log(FavouriteProducts);
+    senditem("product1shoes");
+
+    console.log("senditemcheck");
+</script>
+
+{% endblock %}
